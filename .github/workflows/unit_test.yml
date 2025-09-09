@@ -51,4 +51,4 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_TITLE: Unit Test Results
-          SLACK_MESSAGE_FILE: ${{ steps.parse.outputs.slack_message }}
+          SLACK_MESSAGE: ${{ steps.parse.outputs.slack_message }}
