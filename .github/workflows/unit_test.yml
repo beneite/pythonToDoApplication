@@ -35,6 +35,9 @@ jobs:
       - name: Show Slack message (debug)
         run: cat slack_msg.txt
 
+      - name: Verify Slack message
+        run: test -s slack_msg.txt
+
       - name: Send Slack Notification
         uses: docker://technosophos/slack-notify
         env:
