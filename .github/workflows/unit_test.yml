@@ -30,7 +30,14 @@ jobs:
 
       - name: Parse test results
         id: parse
-        run: python scripts/parse_test_results.py
+        run: |
+          python scripts/parse_test_results.py
+          # read the message content
+          msg=$(cat slack_msg.txt)
+          echo "slack_message<<EOF" >> $GITHUB_OUTPUT
+          echo "$msg" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
 
       - name: Show Slack message (debug)
         run: cat slack_msg.txt
@@ -39,7 +46,9 @@ jobs:
         run: test -s slack_msg.txt
 
       - name: Send Slack Notification
+        if: always()
         uses: docker://technosophos/slack-notify
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_MESSAGE_FILE: slack_msg.txt
+          SLACK_TITLE: Unit Test Results
+          SLACK_MESSAGE_FILE: ${{ steps.parse.outputs.slack_message }}
