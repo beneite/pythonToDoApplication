@@ -38,13 +38,14 @@ jobs:
           tree = ET.parse("report.xml")
           root = tree.getroot()
 
-          total = int(root.attrib["tests"])
+          # Use .get() with default to avoid KeyError
+          total = int(root.attrib.get("tests", 0))
           failures = int(root.attrib.get("failures", 0))
           errors = int(root.attrib.get("errors", 0))
           skipped = int(root.attrib.get("skipped", 0))
           passed = total - failures - errors - skipped
 
-          summary = f"🧪 *Test Report*:\n✅ Passed: {passed}\n❌ Failed: {failures + errors}\n⚠️ Skipped: {skipped}\n📊 Total: {total}"
+          summary = f"🧪 *Test Report by Ashish*:\n✅ Passed: {passed}\n❌ Failed: {failures + errors}\n⚠️ Skipped: {skipped}\n📊 Total: {total}"
 
           with open("slack_msg.txt", "w") as f:
               f.write(summary)
