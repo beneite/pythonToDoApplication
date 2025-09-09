@@ -2,7 +2,7 @@
 from to_do_app.routers.todos import get_db, get_current_user
 from fastapi import status
 from to_do_app.main import app
-from utils import *
+from to_do_app.test.utils import *
 
 
 app.dependency_overrides[get_db] = override_get_db #Whenever a route depends on get_db, don’t call the real get_db(). Instead, call override_get_db()
