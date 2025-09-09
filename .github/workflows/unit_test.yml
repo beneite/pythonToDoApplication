@@ -26,11 +26,11 @@ jobs:
         run: |
           pytest --junitxml=report.xml || true
 
-      - name: Send test summary to Slack
+      - name: Parse test results
+        id: parse
         run: |
           python << 'EOF'
           import xml.etree.ElementTree as ET
-          import requests, os
 
           tree = ET.parse("report.xml")
           root = tree.getroot()
@@ -41,11 +41,14 @@ jobs:
           skipped = int(root.attrib.get("skipped", 0))
           passed = total - failures - errors - skipped
 
-          webhook = os.environ["SLACK_WEBHOOK_URL"]
+          summary = f"🧪 *Test Report*:\n✅ Passed: {passed}\n❌ Failed: {failures + errors}\n⚠️ Skipped: {skipped}\n📊 Total: {total}"
 
-          msg = f"🧪 *Test Report*:\n✅ Passed: {passed}\n❌ Failed: {failures + errors}\n⚠️ Skipped: {skipped}\n📊 Total: {total}"
-
-          requests.post(webhook, json={"text": msg})
+          with open("slack_msg.txt", "w") as f:
+              f.write(summary)
           EOF
+
+      - name: Send Slack Notification
+        uses: docker://technosophos/slack-notify
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_MESSAGE_FILE: slack_msg.txt
