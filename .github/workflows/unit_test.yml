@@ -4,7 +4,7 @@ on:
   workflow_dispatch:   # manual run
   pull_request:        # auto run only on PRs into main
     branches:
-      - main
+      - master
 
 jobs:
   unit-tests-job:
